@@ -10,7 +10,7 @@ chromedriver version
    2. 遊戲編號
    3. 日期
 3. 執行完成會產生 `代理商_遊戲編號_日期.csv`
-4. 資料來源: `https://dev-admin-br-02.iplaystar.net/`
+4. 資料來源: `br-02 後台`
 
 參數說明
 ----
@@ -45,4 +45,4 @@ chromedriver version
 
 流程圖
 ----
-![流程圖](D:\project\game_performance\流程圖.png)
+![流程圖](D:\project\game_performance\game_performance_Slot_流程圖.png)
