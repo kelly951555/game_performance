@@ -45,4 +45,4 @@ chromedriver version
 
 流程圖
 ----
-![流程圖](D:\project\game_performance\game_performance_Slot_流程圖.png)
+![流程圖](.\game_performance_Slot_流程圖.png)
