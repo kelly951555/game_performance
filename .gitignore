@@ -1,0 +1,13 @@
+.idea
+*.jpg
+__pycache__
+*.csv
+*.html
+*.exe
+build
+dist
+*.spec
+test.py
+test_date.py
+lists.py
+config.ini
