@@ -125,41 +125,24 @@ try:
                 time.sleep(2)
                 # 遊戲績效-遊戲-老虎機列表資料
                 bet_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[4]').text.strip().replace(
-                    ',',
-                    '')
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[4]').text.strip().replace(',', '')
                 win_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[5]').text.strip().replace(
-                    ',',
-                    '')
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[5]').text.strip().replace(',', '')
                 bonus_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[6]').text.strip().replace(
-                    ',',
-                    '')
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[6]').text.strip().replace(',', '')
                 jp_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[8]').text.strip().replace(
-                    ',',
-                    '')
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[8]').text.strip().replace(',', '')
                 net_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[11]').text.strip().replace(
-                    ',',
-                    '')
-                RTP_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[12]').text.strip().replace(
-                    ',',
-                    '')
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[11]').text.strip().replace(',', '')
+                rtp_p = driver.find_element_by_xpath(
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[12]').text.strip().replace(',', '')
                 avg_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[13]').text.strip().replace(
-                    ',',
-                    '')
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[13]').text.strip().replace(',', '')
                 g_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[14]').text.strip().replace(
-                    ',',
-                    '')
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[14]').text.strip().replace(',', '')
                 people_p = driver.find_element_by_xpath(
-                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[15]').text.strip().replace(
-                    ',', '')
-                performance_item = [bet_p, win_p, bonus_p, jp_p, net_p, RTP_p, avg_p, g_p, people_p]
+                    '//*[@id="DataTables_Table_1"]/tbody/tr/td[15]').text.strip().replace(',', '')
+                performance_item = [bet_p, win_p, bonus_p, jp_p, net_p, rtp_p, avg_p, g_p, people_p]
                 driver.quit()
                 print('遊戲績效讀取完成')
             except TimeoutException:
@@ -229,14 +212,14 @@ else:
     sum_Win = round(df['Win'].sum(), 2)
     sum_Bonus_Win = round(df['Bonus Win'].sum(), 2)
     total_win = round(sum_Win + sum_Bonus_Win, 2)
-    RTP = round(total_win / sum_Bet * 100, 2)
-    AVG_BET = round(sum_Bet / len(number_list), 2)
+    rtp = round(total_win / sum_Bet * 100, 2)
+    avg_bet = round(sum_Bet / len(number_list), 2)
     players_count = round(len(df.groupby(['Player']).SN.nunique()), 2)
     net = round(sum_Bet - total_win, 2)
-    RTP_t = '{}%'.format(RTP)
+    rtp_t = '{}%'.format(rtp)
     total_columns = ['Game ID', 'Coin In', 'Coin Out', 'Bonus',
                      'Jackpot', 'Net Win', 'R.T.P', 'avg Bet', 'Total Games', 'People']
-    total_row = [g_id, sum_Bet, total_win, sum_Bonus_Win, sum_Jackpot, net, RTP_t, AVG_BET, len(number_list),
+    total_row = [g_id, sum_Bet, total_win, sum_Bonus_Win, sum_Jackpot, net, rtp_t, avg_bet, len(number_list),
                  players_count]
     total = pd.DataFrame(data=[total_row], columns=total_columns)
     # ----Sum of History-----!>
@@ -248,20 +231,20 @@ else:
     p_s = df.groupby(['Player']).agg({'Bet': 'sum', 'Jackpot': 'sum', 'Win': 'sum', 'Bonus Win': 'sum'})
     p_column = ['Player', 'Coin In', 'Coin Out', 'Bonus', 'Jackpot', 'Net Win', 'R.T.P', 'avg Bet', 'Total Games']
     p_row = list()
-    for p in df['Player'].unique():
-        Bet = float(p_s.loc[p, 'Bet'])
-        Jackpot = float(p_s.loc[p, 'Jackpot'])
-        Win = float(p_s.loc[p, 'Win'])
-        BonusWin = float(p_s.loc[p, 'Bonus Win'])
-        game = player_count[p]
-        coin_in = round(Bet, 2)
-        coin_out = round(Win + BonusWin, 2)
+    for Player in df['Player'].unique():
+        Bet = float(p_s.loc[Player, 'Bet'])
+        Jackpot = float(p_s.loc[Player, 'Jackpot'])
+        Win = float(p_s.loc[Player, 'Win'])
+        BonusWin = float(p_s.loc[Player, 'Bonus Win'])
+        Game = player_count[Player]
+        Coin_in = round(Bet, 2)
+        Coin_out = round(Win + BonusWin, 2)
         Bonus = round(BonusWin, 2)
         Jackpot = round(Jackpot, 2)
-        NetWin = round(coin_in - coin_out, 2)
-        RTP = '{}%'.format(round(coin_out / coin_in * 100, 2))
-        avg = round(coin_in / game, 2)
-        p_row.append([p, coin_in, coin_out, Bonus, Jackpot, NetWin, RTP, avg, game])
+        NetWin = round(Coin_in - Coin_out, 2)
+        RTP = '{}%'.format(round(Coin_out / Coin_in * 100, 2))
+        Avg = round(Coin_in / Game, 2)
+        p_row.append([Player, Coin_in, Coin_out, Bonus, Jackpot, NetWin, RTP, Avg, Game])
     player_df = pd.DataFrame(data=p_row, columns=p_column)
     player_df.sort_values(['Player'], ascending=True)
     # ----Sum by Player----!>
