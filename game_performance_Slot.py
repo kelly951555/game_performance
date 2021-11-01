@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from driver_setting import driver_init
+from inspection import comparison
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -10,14 +10,6 @@ import time
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from datetime import date
 import configparser
-
-
-def comparison(item, history, performance):
-    if float(history) == float(performance):
-        comparison_result = [item, history, performance, '[PASS]']
-    else:
-        comparison_result = [item, history, performance, '[FAIL]']
-    return comparison_result
 
 
 def is_valid_date(str_date):
@@ -53,15 +45,8 @@ if not is_valid_date(date_time):
     date_time = today
 else:
     date_time = date_time
-# driver init
-options = Options()
-options.add_argument("--disable-notifications")
-options.add_argument("--disable-logging")
-options.add_argument("--log-level=3")
-options.add_argument("--headless")
-driver = webdriver.Chrome('./chromedriver', options=options)
+driver = driver_init()
 wait = WebDriverWait(driver, 3)
-driver.maximize_window()
 # 判斷網站是否存在
 try:
     driver.get(login)
@@ -329,4 +314,3 @@ else:
     Comparison_result.to_csv(filename, encoding='utf-8', index=False, header=False, mode='a')
     cp.to_csv(filename, encoding='utf-8', index=False, mode='a')
     print('完成報表 {}'.format(filename))
-
