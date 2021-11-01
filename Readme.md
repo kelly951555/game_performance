@@ -4,7 +4,7 @@ chromedriver version
 
 使用說明
 ----
-1. `game_performance_Slot.exe` 需與 `chromedriver.exe` 放在同一層
+1. `game_performance_Slot` 需與 `chromedriver.exe` 放在同一層
 2. 必要參數
    1. 代理商
    2. 遊戲編號

@@ -11,3 +11,4 @@ test.py
 test_date.py
 lists.py
 config.ini
+.gitignore
