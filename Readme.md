@@ -4,7 +4,7 @@ chromedriver version
 
 使用說明
 ----
-1. `game_performance_Slot` 需與 `chromedriver.exe` 放在同一層
+1. `game_performance_Slot` `chromedriver.exe` 需放在同一層
 2. 必要參數
    1. 代理商
    2. 遊戲編號
@@ -24,7 +24,7 @@ chromedriver version
 
 ### 日期規格
 1. 指定格式 `YYYY-MM-DD`
-2. 超出規範會轉為當天日期，反之當日可以不用輸入日期
+2. 不符合規範會轉為當天日期，反之 `當日可以不用輸入日期`
 
 輸出檔案說明
 ----
@@ -35,13 +35,16 @@ chromedriver version
    4. Sum of History → 依照 `List of History` 的全部資料計算績效需要的值
    5. Comparison Result → 自動比對 `遊戲績效-遊戲`
 2. 例外情形
-   1. 以下情形 CSV 內容會顯示 `no_data`
-      1. 網站掛掉
-      2. 登入失敗
-      3. 遊戲紀錄頁掛掉
-      4. 沒有遊戲紀錄
-   2. 遊戲績效掛掉 `Comparison Result` 會顯示 `performance does not exist`
-   3. 遊戲績效沒資料會抓到0，與第2點不同
+   1. 登入失敗不會產生報表
+      1. 網站不存在 `page down`
+      2. 無法登入 `login failed1`
+      3. 登入後找不到元素 `login failed2`
+   2. 以下情形 CSV 內容會顯示內容
+      + 遊戲紀錄頁掛掉 `enter history failed`
+      + 沒有遊戲紀錄 `no data`
+   3. 遊戲績效掛掉 `Comparison Result` 會顯示 `enter game_performance failed`
+   4. 進入遊戲績效若遇上跑版之類的例外，無法定位績效資料會顯示 `load game_performance failed`
+   5. 遊戲績效沒資料會抓到0，與第 3 4 點不同
 
 流程圖
 ----

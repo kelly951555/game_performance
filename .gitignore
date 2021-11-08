@@ -8,7 +8,9 @@ build
 dist
 *.spec
 test.py
+test2.py
 test_date.py
 lists.py
 config.ini
 .gitignore
+output
