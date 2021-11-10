@@ -128,7 +128,8 @@ else:
         # ----Sum by Player----!>
         print('遊戲紀錄計算完成')
         # <!----Comparison Result----
-        if performance_status != 'load game_performance failed' or 'enter game_performance failed':
+        # if performance_status != 'load game_performance failed' or 'enter game_performance failed':
+        if isinstance(performance_status, list):
             print('---比對遊戲績效---')
             cp_list = ['Coin In', 'Coin Out', 'Bonus', 'Jackpot', 'Net Win', 'R.T.P', 'avg Bet', 'Total Games',
                        'People']
