@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
 import time
+import requests
 
 
 # 檢查日期格式
@@ -60,7 +61,7 @@ def login(url, user, pwd):
 
 
 # 擷取歷史紀錄
-def get_history(url, date_time, agent_value, g_id, game_type):
+def get_history(url, date_time, agent_value, g_id, game_type, count):
     driver.get(url + '/Player/game_history')
     try:
         wait_history = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="sh_btn"]')))
@@ -72,9 +73,6 @@ def get_history(url, date_time, agent_value, g_id, game_type):
         end_history = driver.find_element_by_id('end')
         end_history.clear()
         end_history.send_keys('{} 23:59:59'.format(date_time).replace('-', '/'))
-        # 筆數下拉選單
-        select_count = Select(driver.find_element_by_id('count'))
-        select_count.select_by_value("2000")
         # 代理商
         select_agent = Select(driver.find_element_by_id('agent'))
         select_agent.select_by_value(agent_value)
@@ -87,6 +85,9 @@ def get_history(url, date_time, agent_value, g_id, game_type):
         else:
             game_type = 'PSS%'
         select_game_type.select_by_value(game_type)
+        # 筆數下拉選單
+        select_count = Select(driver.find_element_by_id('count'))
+        select_count.select_by_value(count)
         # 選擇遊戲
         select_game = Select(driver.find_element_by_xpath('//*[@id="game_select"]'))
         # 等待遊戲列表
@@ -96,8 +97,14 @@ def get_history(url, date_time, agent_value, g_id, game_type):
         time.sleep(2)
         # 等待遊戲紀錄第一張圖
         try:
-            wait_history = wait.until(EC.presence_of_element_located
-                                      ((By.XPATH, '//*[@id="history"]/div[1]/div/table/tbody/tr[10]/td[1]')))
+            if game_type == 'fish':
+                game_type = 'PSF%'
+            elif game_type == 'card':
+                wait_history = wait.until(EC.presence_of_element_located
+                                          ((By.XPATH, '//*[@id="history"]/div[1]')))
+            else:
+                wait_history = wait.until(EC.presence_of_element_located
+                                          ((By.XPATH, '//*[@id="history"]/div[1]/div/table/tbody/tr[10]/td[1]')))
             # 遊戲紀錄 html
             history_status = BeautifulSoup(driver.page_source, "html.parser")
             return history_status
@@ -139,30 +146,30 @@ def get_performance(url, date_time, agent_value, g_id, game_type):
                 avg_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[13]'
                 g_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[14]'
                 people_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[15]'
+                driver.find_element_by_xpath(xpath).send_keys(g_id)
+                time.sleep(2)
+                # 遊戲績效-遊戲-老虎機列表資料
+                bet_p = driver.find_element_by_xpath(bet_p_path).text.strip().replace(',', '')
+                win_p = driver.find_element_by_xpath(win_p_path).text.strip().replace(',', '')
+                bonus_p = driver.find_element_by_xpath(bonus_p_path).text.strip().replace(',', '')
+                jp_p = driver.find_element_by_xpath(jp_p_path).text.strip().replace(',', '')
+                net_p = driver.find_element_by_xpath(net_p_path).text.strip().replace(',', '')
+                rtp_p = driver.find_element_by_xpath(rtp_p_path).text.strip().replace(',', '')
+                avg_p = driver.find_element_by_xpath(avg_p_path).text.strip().replace(',', '')
+                g_p = driver.find_element_by_xpath(g_p_path).text.strip().replace(',', '')
+                people_p = driver.find_element_by_xpath(people_p_path).text.strip().replace(',', '')
+                performance_status = [bet_p, win_p, bonus_p, jp_p, net_p, rtp_p, avg_p, g_p, people_p]
             else:
-                xpath = '//*[@id="DataTables_Table_1_filter"]/label/input'
-                bet_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[4]'
-                win_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[5]'
-                bonus_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[6]'
-                jp_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[8]'
-                net_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[11]'
-                rtp_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[12]'
-                avg_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[13]'
-                g_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[14]'
-                people_p_path = '//*[@id="DataTables_Table_1"]/tbody/tr/td[15]'
-            driver.find_element_by_xpath(xpath).send_keys(g_id)
-            time.sleep(2)
-            # 遊戲績效-遊戲-老虎機列表資料
-            bet_p = driver.find_element_by_xpath(bet_p_path).text.strip().replace(',', '')
-            win_p = driver.find_element_by_xpath(win_p_path).text.strip().replace(',', '')
-            bonus_p = driver.find_element_by_xpath(bonus_p_path).text.strip().replace(',', '')
-            jp_p = driver.find_element_by_xpath(jp_p_path).text.strip().replace(',', '')
-            net_p = driver.find_element_by_xpath(net_p_path).text.strip().replace(',', '')
-            rtp_p = driver.find_element_by_xpath(rtp_p_path).text.strip().replace(',', '')
-            avg_p = driver.find_element_by_xpath(avg_p_path).text.strip().replace(',', '')
-            g_p = driver.find_element_by_xpath(g_p_path).text.strip().replace(',', '')
-            people_p = driver.find_element_by_xpath(people_p_path).text.strip().replace(',', '')
-            performance_status = [bet_p, win_p, bonus_p, jp_p, net_p, rtp_p, avg_p, g_p, people_p]
+                try:
+                    wait_game_performance = wait.until(
+                        EC.presence_of_element_located((By.XPATH, '//*[@id="DataTables_Table_3_filter"]/label/input')))
+
+                    driver.find_element_by_xpath('//*[@id="DataTables_Table_3_filter"]/label/input').send_keys(g_id)
+                    time.sleep(2)
+                    performance_status = BeautifulSoup(driver.page_source, "html.parser")
+                except TimeoutException:
+                    print('load game_performance failed')
+                    performance_status = 'load game_performance failed'
             return performance_status
         except TimeoutException:
             print('load game_performance failed')
@@ -172,6 +179,69 @@ def get_performance(url, date_time, agent_value, g_id, game_type):
         print('enter game_performance failed')
         performance_status = 'enter game_performance failed'
         return performance_status
+
+
+def get_resource(url, token, type, g_id, date):
+    resource_url = url + '/Resource/game_history'
+    start_dtm = '{}T00:00:00'.format(date)
+    end_dtm = '{}T23:59:59'.format(date)
+    params = {'token': token,
+              'type': type,
+              'g_id': g_id,
+              'count': '2000',
+              'lang': 'en-US',
+              'start_dtm': start_dtm,
+              'end_dtm': end_dtm}
+    r = requests.get(resource_url, params=params)
+    if r.status_code == requests.codes.ok:
+        # print(r.url)
+        history_resource = BeautifulSoup(r.text, "html.parser")
+        return history_resource
+    else:
+        return False
+
+
+def get_performance_player(url, date_time, agent_value, g_id):
+    driver.get(url + '/Accounting/game_performance')
+    try:
+        wait_game_performance = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="sh_btn"]')))
+        print('---遊戲績效-玩家讀取中---')
+        # 輸入日期
+        start_performance = driver.find_element_by_id('start')
+        start_performance.clear()
+        start_performance.send_keys(date_time.replace('-', '/'))
+        end_performance = driver.find_element_by_id('end')
+        end_performance.clear()
+        end_performance.send_keys(date_time.replace('-', '/'))
+        # 搜尋類別-玩家
+        select_search_class = Select(driver.find_element_by_id('search_class'))
+        select_search_class.select_by_value('player')
+        # 代理商
+        select_agent = Select(driver.find_element_by_id('agent'))
+        select_agent.select_by_value(agent_value)
+        time.sleep(2)
+        # 遊戲類型
+        select_game_class = Select(driver.find_element_by_id('game_class'))
+        select_game_class.select_by_value('card')
+        time.sleep(2)
+        # 選擇遊戲
+        select_game_select = Select(driver.find_element_by_id('game_select'))
+        select_game_select.select_by_value(g_id)
+        driver.find_element_by_xpath('//*[@id="sh_btn"]').click()
+        try:
+            wait_game_performance = wait.until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="DataTables_Table_4_length"]/label/select')))
+            time.sleep(2)
+            performance_player_status = BeautifulSoup(driver.page_source, "html.parser")
+            return performance_player_status
+        except TimeoutException:
+            print('load game_performance failed')
+            performance_player_status = False
+            return performance_player_status
+    except TimeoutException:
+        print('enter game_performance failed')
+        performance_player_status = False
+        return performance_player_status
 
 
 def logout():

@@ -3,6 +3,7 @@
 __pycache__
 *.csv
 *.html
+*.xml
 *.exe
 build
 dist
@@ -11,6 +12,6 @@ test.py
 test2.py
 test_date.py
 lists.py
-config.ini
+*.ini
 .gitignore
 output

@@ -2,8 +2,9 @@ import pandas as pd
 from inspection import *
 import configparser
 import os
+import pathlib
 
-fp_dir = os.path.dirname(__file__)
+fp_dir = pathlib.Path().absolute()
 config_path = os.path.join(fp_dir, "config.ini")
 config = configparser.ConfigParser()
 config.read(config_path)
@@ -30,7 +31,7 @@ if login_status != 'login successfully':
     print(login_status)
     logout()
 else:
-    history_status = get_history(url, date_time, agent_value, g_id, 'slot')
+    history_status = get_history(url, date_time, agent_value, g_id, 'slot', '2000')
     performance_status = get_performance(url, date_time, agent_value, g_id, 'slot')
     logout()
     print('---遊戲紀錄計算中---')
@@ -124,7 +125,7 @@ else:
             Avg = round(Coin_in / Game, 2)
             p_row.append([Player, Coin_in, Coin_out, Bonus, Jackpot, NetWin, RTP, Avg, Game])
         player_df = pd.DataFrame(data=p_row, columns=p_column)
-        player_df.sort_values(['Player'], ascending=True)
+        player_df.sort_values(by=['Player'], inplace=True)
         # ----Sum by Player----!>
         print('遊戲紀錄計算完成')
         # <!----Comparison Result----
