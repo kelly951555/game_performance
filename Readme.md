@@ -1,8 +1,4 @@
-chromedriver version
-----
-94.0.4606.61
-
-使用說明
+game_performance_Slot 使用說明
 ----
 1. `game_performance_Slot` `chromedriver.exe` 需放在同一層
 2. 必要參數
@@ -49,3 +45,49 @@ chromedriver version
 流程圖
 ----
 ![流程圖](game_performance_Slot_流程圖.png)
+
+------
+
+game_performance_52 使用說明
+----
+1. `game_performance_Slot` `chromedriver.exe` `config.ini`需放在同一層
+2. 必要參數
+   1. 代理商
+   2. 遊戲編號
+   3. 日期
+3. 執行完成會產生 `代理商_遊戲編號_日期.csv`
+4. 資料來源: `br-02 後台` `resource`
+
+game_performance_52 執行說明
+----
++ 執行檔後加上參數
++ EX. game_performance_52.exe TEST2 PSC-ON-00008 2021-11-15
+
+參數說明
+----
+### 代理商規格
+1. 依照參數1，沒有防呆
+
+### 遊戲編號規格
+1. 依照參數2，防呆-將空格去除以及轉換大寫
+
+### 日期規格
+1. 依照參數3
+2. 指定格式 `YYYY-MM-DD`
+3. 不符合規範會轉為當天日期
+
+輸出檔案說明
+----
+1. 內容
+   1. 顯示 遊戲編號、代理商
+   2. List of History → 歷史紀錄抓取的資料列表
+   3. Game History by room → 依照 `List of History` 抽出房間資料計算
+   4. Game History by player → 依照 `List of History` 抽出玩家資料計算
+   5. Game performance by room → 依照 `後台-遊戲績效-遊戲` 擷取資料
+   6. Game performance by player → 依照 `後台-遊戲績效-玩家` 擷取資料
+   7. Comparison Result → 自動比對 `遊戲績效-遊戲` `後台-遊戲績效-玩家`
+      1. 比對結果參照欄位 `status`
+
+流程圖
+----
+![流程圖](game_performance_Slot_52流程圖.png)
