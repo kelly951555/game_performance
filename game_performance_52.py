@@ -29,14 +29,15 @@ if history_resource is False:
     print('resource error')
 else:
     result = history_resource.find_all("div", {'class': 'pstm_number'})
+    print('---遊戲紀錄計算中---')
     rows = list()
     for r in result:
         r = r.text.strip()
         # SN
-        for SN in history_resource.select(
+        for sn in history_resource.select(
                 "#history > div:nth-child({}) > div > div.table-responsive > table > "
                 "tbody > tr:nth-child(6) > td:nth-child(2)".format(r)):
-            SN = SN.text.strip()
+            sn = sn.text.strip()
         # player
         for player in history_resource.select(
                 "#history > div:nth-child({}) > div > div.table-responsive > table > "
@@ -58,9 +59,9 @@ else:
                 coin_out = 0
             else:
                 coin_out = 2 * win
-        row = [r, player, SN, room, win, coin_in, coin_out]
+        row = [r, player, sn, room, win, coin_in, coin_out]
         rows.append(row)
-    columns = ['Item', 'Player', 'SN', 'room', 'win', 'coin in', 'coin out']
+    columns = ['Item', 'Player', 'SN', 'Room', 'Win', 'Coin in', 'Coin out']
 
     df = pd.DataFrame(data=rows, columns=columns)
     if df.size == 0:
@@ -69,43 +70,35 @@ else:
         print('{} {} Game History'.format(agent, g_id))
         print(df)
         # performance by room
-        room_count = df['room'].value_counts()
-        rooms = df['room'].unique()
+        room_count = df['Room'].value_counts()
+        rooms = df['Room'].unique()
         players = df['Player'].unique()
         # print(players)
-        r_s = df.groupby(['room']).agg({'coin in': 'sum', 'coin out': 'sum'})
-        room_group = df.groupby(['room'])
+        r_s = df.groupby(['Room']).agg({'Coin in': 'sum', 'Coin out': 'sum'})
+        room_group = df.groupby(['Room'])
         r_row = list()
         for r in rooms:
             room_number = ('%.0f' % room_index.get(r))
-            coin_in = float(r_s.loc[r, 'coin in'])
-            coin_out = float(r_s.loc[r, 'coin out'])
+            coin_in = float(r_s.loc[r, 'Coin in'])
+            coin_out = float(r_s.loc[r, 'Coin out'])
             net = coin_in - coin_out
             if coin_in == 0:
                 rtp = '0.00%'
             else:
-                rr = round(coin_out / coin_in * 100, 2)
-                rr = ('%.2f' % rr)
+                rr = ('%.2f' % round(coin_out / coin_in * 100, 2))
                 rtp = '{}%'.format(rr)
             people = ('%.0f' % len(room_group.get_group(r).groupby(['Player']).SN.nunique()))
-            Game = room_count[r]
-            avg = round(coin_in / Game, 2)
+            game = room_count[r]
+            avg = round(coin_in / game, 2)
             coin_in = ('%.2f' % coin_in)
             coin_out = ('%.2f' % coin_out)
             net = ('%.2f' % net)
             avg = ('%.2f' % avg)
-            Game = ('%.0f' % room_count[r])
-            r_row.append([room_number, coin_in, coin_out, net, rtp, avg, people, Game])
-        r_column = ['room', 'coin in', 'coin out', 'Net Win', 'rtp', 'avg bet', 'people', 'Game']
+            game = ('%.0f' % room_count[r])
+            r_row.append([room_number, coin_in, coin_out, net, rtp, avg, people, game])
+        r_column = ['Room', 'Coin In', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'People', 'Game']
         room_df = pd.DataFrame(data=r_row, columns=r_column)
-        room_df['room'] = room_df['room'].astype(object)
-        room_df['coin in'] = room_df['coin in'].astype(object)
-        room_df['coin out'] = room_df['coin out'].astype(object)
-        room_df['Net Win'] = room_df['Net Win'].astype(object)
-        room_df['avg bet'] = room_df['avg bet'].astype(object)
-        room_df['people'] = room_df['people'].astype(object)
-        room_df['Game'] = room_df['Game'].astype(object)
-        room_df.sort_values(by=['room'], inplace=True)
+        room_df.sort_values(by=['Room'], inplace=True)
         print('Game History_Game')
         print(room_df)
         # <!----Sum by Player----
@@ -113,34 +106,27 @@ else:
         player_count = df['Player'].value_counts()
         # 玩家列表
         players = df['Player'].unique()
-        p_s = df.groupby(['Player']).agg({'coin in': 'sum', 'coin out': 'sum'})
-        p_column = ['Player', 'coin in', 'coin out', 'Net Win', 'rtp', 'avg bet', 'Game']
+        p_s = df.groupby(['Player']).agg({'Coin in': 'sum', 'Coin out': 'sum'})
+        p_column = ['Player', 'Coin in', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'Game']
         p_row = list()
         for Player in players:
-            Game = player_count[Player]
-            coin_in = float(p_s.loc[Player, 'coin in'])
-            coin_out = float(p_s.loc[Player, 'coin out'])
-            NetWin = round(coin_in - coin_out, 2)
+            game = player_count[Player]
+            coin_in = float(p_s.loc[Player, 'Coin in'])
+            coin_out = float(p_s.loc[Player, 'Coin out'])
+            net_win = round(coin_in - coin_out, 2)
             if coin_in == 0:
-                RTP = '0.00%'
+                rtp = '0.00%'
             else:
-                rr = round(coin_out / coin_in * 100, 2)
-                rr = ('%.2f' % rr)
-                RTP = '{}%'.format(rr)
-            Avg = round(coin_in / Game, 2)
+                rr = ('%.2f' % round(coin_out / coin_in * 100, 2))
+                rtp = '{}%'.format(rr)
+            avg = round(coin_in / game, 2)
             coin_in = ('%.2f' % coin_in)
             coin_out = ('%.2f' % coin_out)
-            NetWin = ('%.2f' % NetWin)
-            Avg = ('%.2f' % Avg)
-            Game = ('%.0f' % Game)
-            p_row.append([Player, coin_in, coin_out, NetWin, RTP, Avg, Game])
+            net_win = ('%.2f' % net_win)
+            avg = ('%.2f' % avg)
+            game = ('%.0f' % game)
+            p_row.append([Player, coin_in, coin_out, net_win, rtp, avg, game])
         player_df = pd.DataFrame(data=p_row, columns=p_column)
-        player_df['Player'] = player_df['Player'].astype(object)
-        player_df['coin in'] = player_df['coin in'].astype(object)
-        player_df['coin out'] = player_df['coin out'].astype(object)
-        player_df['Net Win'] = player_df['Net Win'].astype(object)
-        player_df['avg bet'] = player_df['avg bet'].astype(object)
-        player_df['Game'] = player_df['Game'].astype(object)
         player_df.sort_values(by=['Player'], inplace=True)
         print('Game History_Player')
         print(player_df)
@@ -148,10 +134,12 @@ else:
         login_status = login(url, username, user_password)
         if login_status != 'login successfully':
             print(login_status)
+            logout()
         else:
             performance_status = get_performance(url, date_time, agent, g_id, 'CARD')
             if isinstance(performance_status, str):
                 print(performance_status)
+                logout()
             else:
                 # print(performance_status)
                 table = performance_status.find(id='DataTables_Table_3')
@@ -193,13 +181,14 @@ else:
                     row = [room, coin_in, coin_out, net, rtp, avg, people, games]
                     rows.append(row)
 
-                columns = ['room', 'coin in', 'coin out', 'Net Win', 'rtp', 'avg bet', 'people', 'Game']
+                columns = ['Room', 'Coin In', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'People', 'Game']
                 df_performance = pd.DataFrame(data=rows, columns=columns)
                 is_zero = df_performance.iat[0, 7]
                 if is_zero != '0':
                     print('Game Performance_Game')
                     print(df_performance)
                     player_performance = get_performance_player(url, date_time, agent, g_id)
+                    logout()
                     if player_performance is False:
                         print(player_performance)
                     else:
@@ -239,16 +228,20 @@ else:
                             row = [player, player_coin_in, player_coin_out, player_net, player_rtp, player_avg,
                                    player_games]
                             player_rows.append(row)
-                        player_columns = ['Player', 'coin in', 'coin out', 'Net Win', 'rtp', 'avg bet', 'Game']
+                        player_columns = ['Player', 'Coin in', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'Game']
                         player_p_df = pd.DataFrame(data=player_rows, columns=player_columns)
                         player_p_df.sort_values(by=['Player'], inplace=True)
                         print('Game Performance_Player')
                         print(player_p_df)
                         print('comparison by room')
                         result2 = room_df.merge(df_performance, how='outer', indicator=True).replace('both', 'PASS')
+                        result2.set_axis(['Room', 'Coin in', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'People', 'Game',
+                                          'status'], axis='columns', inplace=True)
                         print(result2)
                         print('comparison by player')
                         result3 = player_df.merge(player_p_df, how='outer', indicator=True).replace('both', 'PASS')
+                        result3.set_axis(['Player', 'Coin in', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'Game',
+                                          'status'], axis='columns', inplace=True)
                         print(result3)
                         filename = './{}_{}_{}.csv'.format(agent, g_id, date_time)
                         print('---製作報表 {}---'.format(filename))
@@ -283,4 +276,3 @@ else:
                         result3.to_csv(filename, encoding='utf-8', index=False, mode='a')
                 else:
                     print('Performance no data')
-        logout()
