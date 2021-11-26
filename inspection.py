@@ -182,7 +182,7 @@ def get_performance(url, date_time, agent_value, g_id, game_type):
 
 
 def get_resource(url, token, type, g_id, date):
-    resource_url = url + '/Resource/game_history'
+    resource_url = url + 'Resource/game_history'
     start_dtm = '{}T00:00:00'.format(date)
     end_dtm = '{}T23:59:59'.format(date)
     params = {'token': token,
@@ -194,7 +194,7 @@ def get_resource(url, token, type, g_id, date):
               'end_dtm': end_dtm}
     r = requests.get(resource_url, params=params)
     if r.status_code == requests.codes.ok:
-        # print(r.url)
+        print(r.url)
         history_resource = BeautifulSoup(r.text, "html.parser")
         return history_resource
     else:
@@ -232,6 +232,9 @@ def get_performance_player(url, date_time, agent_value, g_id):
             wait_game_performance = wait.until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="DataTables_Table_4_length"]/label/select')))
             time.sleep(2)
+            filter = driver.find_element_by_xpath('//*[@id="DataTables_Table_4_filter"]/label/input')
+            filter.send_keys(g_id)
+            time.sleep(1)
             performance_player_status = BeautifulSoup(driver.page_source, "html.parser")
             return performance_player_status
         except TimeoutException:
