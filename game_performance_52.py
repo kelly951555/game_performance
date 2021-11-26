@@ -35,30 +35,33 @@ else:
         r = r.text.strip()
         # SN
         for sn in history_resource.select(
-                "#history > div:nth-child({}) > div > div.table-responsive > table > "
-                "tbody > tr:nth-child(6) > td:nth-child(2)".format(r)):
+                "#history > div:nth-child({}) > div > div.table-responsive > table > tbody > "
+                "tr:nth-child(8) > td:nth-child(1)".format(r)):
             sn = sn.text.strip()
         # player
         for player in history_resource.select(
-                "#history > div:nth-child({}) > div > div.table-responsive > table > "
-                "tbody > tr:nth-child(2) > td".format(r)):
+                "#history > div:nth-child({}) > div > div.table-responsive > table > tbody > "
+                "tr:nth-child(2) > td".format(r)):
             player = player.text.strip().split(')')[1].replace(' ', '')
         # room
         for room in history_resource.select(
-                "#history > div:nth-child({}) > div > div.table-responsive > table > "
-                "tbody > tr:nth-child(6) > td:nth-child(1)".format(r)):
+                "#history > div:nth-child({}) > div > div.table-responsive > table > tbody > "
+                "tr:nth-child(6) > td:nth-child(3)".format(r)):
             room = room.text.strip()
-        # win
-        for win in history_resource.select(
-                "#history > div:nth-child({}) > div > div.table-responsive > table > "
-                "tbody > tr:nth-child(10) > td".format(r)):
-            win = float(
-                win.text.replace('\n', '').replace('\xa0', '').replace(' ', '').replace('+', '').replace(',', ''))
-            coin_in = abs(win)
-            if win <= 0:
-                coin_out = 0
+        for coin_in in history_resource.select(
+                "#history > div:nth-child({}) > div > div.table-responsive > table > tbody > "
+                "tr:nth-child(8) > td:nth-child(4)".format(r)):
+            coin_in = float(
+                coin_in.text.replace('(', '').replace(')', '').replace(' ', '').replace('+', '').replace(',', ''))
+        for coin_out in history_resource.select(
+                "#history > div:nth-child({}) > div > div.table-responsive > table > tbody > "
+                "tr:nth-child(10) > td:nth-child(2)".format(r)):
+            coin_out = float(
+                coin_out.text.replace('(', '').replace(')', '').replace(' ', '').replace('+', '').replace(',', ''))
+            if coin_out == 0:
+                win = coin_in*-1
             else:
-                coin_out = 2 * win
+                win = coin_out*0.5
         row = [r, player, sn, room, win, coin_in, coin_out]
         rows.append(row)
     columns = ['Item', 'Player', 'SN', 'Room', 'Win', 'Coin in', 'Coin out']
@@ -234,12 +237,14 @@ else:
                         print('Game Performance_Player')
                         print(player_p_df)
                         print('comparison by room')
-                        result2 = room_df.merge(df_performance, how='outer', indicator=True).replace('both', 'PASS')
+                        result2 = room_df.merge(df_performance, how='outer', indicator=True)\
+                            .replace(['both', 'left_only', 'right_only'], ['PASS', 'Performance FAIL', 'History FAIL'])
                         result2.set_axis(['Room', 'Coin in', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'People', 'Game',
                                           'status'], axis='columns', inplace=True)
                         print(result2)
                         print('comparison by player')
-                        result3 = player_df.merge(player_p_df, how='outer', indicator=True).replace('both', 'PASS')
+                        result3 = player_df.merge(player_p_df, how='outer', indicator=True)\
+                            .replace(['both', 'left_only', 'right_only'], ['PASS', 'Performance FAIL', 'History FAIL'])
                         result3.set_axis(['Player', 'Coin in', 'Coin out', 'Net Win', 'RTP', 'Avg. Bet', 'Game',
                                           'status'], axis='columns', inplace=True)
                         print(result3)
